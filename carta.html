@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es" style="background:#faf3e0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Carta | La Tetera de Greda</title>
+    <meta name="description" content="Carta completa de La Tetera de Greda. Platos típicos chilenos, carnes, del mar, postres y bebestibles en Villa Alemana.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="favicon-tetera.png">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --greda-red: #7a281d;
+            --greda-brown: #401b0f;
+            --greda-orange: #e58729;
+            --bg-light: #faf3e0;
+            --text-dark: #2c1e16;
+            --white: #ffffff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--greda-brown); }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 80vh;
+            background: linear-gradient(rgba(64, 27, 15, 0.78), rgba(122, 40, 29, 0.78)) center/cover;
+            background-color: var(--greda-brown);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; color: white; padding: 40px 20px 0;
+            /* Visible de inmediato; imagen Firestore se aplica cuando carga */
+        }
+        .hero-logo { width: 220px; margin-bottom: 18px; filter: drop-shadow(0 4px 14px rgba(0,0,0,0.6)); }
+        .hero h1 { color: white; font-size: 3.4rem; margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+        .hero-sub { font-size: 1.2rem; font-style: italic; opacity: 0.9; }
+        .hero-nav {
+            display: flex; justify-content: center; flex-wrap: wrap;
+            gap: 0; margin-top: 40px; width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .hero-nav a {
+            color: white; text-decoration: none; font-weight: 600;
+            font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;
+            padding: 18px 30px; transition: 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        .hero-nav a:hover, .hero-nav a.active { background: rgba(255,255,255,0.1); border-bottom: 3px solid var(--greda-orange); }
+
+        /* ── BUSCADOR ── */
+        .search-bar-wrap {
+            max-width: 520px; margin: 0 auto 30px;
+            display: flex; align-items: center; gap: 0;
+            background: white; border-radius: 30px;
+            border: 2px solid #e0d0c0;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+        .search-bar-wrap i { padding: 0 16px; color: #bbb; font-size: 1rem; }
+        #carta-search {
+            flex: 1; border: none; outline: none; font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem; padding: 13px 0; background: transparent; color: var(--text-dark);
+        }
+        #btn-clear-search {
+            background: none; border: none; cursor: pointer; padding: 0 16px;
+            color: #bbb; font-size: 1rem; transition: 0.2s;
+            display: none;
+        }
+        #btn-clear-search:hover { color: var(--greda-red); }
+        .no-results { text-align: center; grid-column: 1/-1; padding: 40px 0; color: #999; }
+
+        /* ── SECCIÓN MENÚ ── */
+        .menu-section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; color: var(--greda-red); font-size: 2.5rem; margin-bottom: 40px; }
+
+        /* ── FILTROS ── */
+        .filters { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+        .filter-btn { background-color: transparent; border: 2px solid var(--greda-brown); color: var(--greda-brown); padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; font-family: 'Poppins', sans-serif; font-size: 0.9rem; }
+        .filter-btn.active, .filter-btn:hover { background-color: var(--greda-brown); color: white; }
+
+        /* ── TARJETAS DE PLATOS ── */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .menu-item { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); display: none; flex-direction: column; border-bottom: 5px solid var(--greda-red); position: relative; }
+        .menu-item.show { display: flex; animation: fadeIn 0.4s; }
+        .plato-img { width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s; }
+        .menu-item:hover .plato-img { transform: scale(1.05); }
+        .item-content { padding: 22px; display: flex; flex-direction: column; flex-grow: 1; }
+        .item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; }
+        .item-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.25rem; color: var(--greda-red); }
+        .item-price { font-weight: 600; font-size: 1.15rem; color: var(--text-dark); white-space: nowrap; margin-left: 10px; }
+        .item-price.oferta-precio { color: var(--greda-orange); font-size: 1.3rem; }
+        .item-price.tachado { text-decoration: line-through; color: #aaa; font-size: 0.95rem; margin-right: 8px; font-weight: 400; }
+        .item-desc { font-size: 0.9rem; color: #666; line-height: 1.6; margin-top: auto; }
+        .item-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .item-tag { font-size: 0.75rem; padding: 3px 9px; border-radius: 20px; background: #fdf3e7; color: var(--greda-brown); font-weight: 600; border: 1px solid #e8d5b8; }
+        .oferta-ribbon {
+            position: absolute; top: 15px; left: -8px; background: var(--greda-orange); color: white;
+            padding: 5px 12px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 10; border-radius: 0 4px 4px 0;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .oferta-ribbon::before {
+            content: ''; position: absolute; bottom: -8px; left: 0;
+            border-top: 8px solid #b86214; border-left: 8px solid transparent;
+        }
+        /* Badge agotado */
+        .agotado-badge {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center;
+            z-index: 5;
+        }
+        .agotado-badge span {
+            background: rgba(122,40,29,0.9); color: white; padding: 8px 20px;
+            border-radius: 6px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── BEBESTIBLES EN LISTA ── */
+        .drinks-section { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; display: none; }
+        .drink-category-title { font-family: 'Playfair Display', serif; text-align: center; color: var(--greda-red); font-size: 1.8rem; margin: 40px 0 20px; border-bottom: 2px solid var(--greda-orange); padding-bottom: 10px; }
+        .drink-list-item { display: flex; align-items: baseline; margin-bottom: 14px; }
+        .drink-name { font-weight: 600; color: var(--greda-brown); font-size: 1rem; }
+        .drink-dots { flex-grow: 1; border-bottom: 2px dotted #ccc; margin: 0 15px; position: relative; top: -5px; }
+        .drink-price { font-weight: 700; color: var(--text-dark); white-space: nowrap; }
+        .drink-tags { display: flex; gap: 4px; margin-left: 8px; }
+        .drink-tags .item-tag { font-size: 0.7rem; padding: 2px 7px; }
+
+        /* ── MAPA Y CONTACTO ── */
+        .social-map-section { background-color: var(--greda-brown); color: white; padding: 60px 20px; }
+        .social-map-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+        @media (min-width: 768px) { .social-map-container { grid-template-columns: 1fr 1fr; } }
+        .contact-box h2 { color: var(--greda-orange); font-size: 2rem; margin-bottom: 20px; }
+        .contact-box p { line-height: 2.2; font-size: 1rem; color: #ddd; }
+        .contact-box p i { color: var(--greda-orange); margin-right: 10px; }
+        .contact-box a { color: #ddd; text-decoration: none; }
+        .contact-box a:hover { color: white; }
+        .instagram-link { display: inline-flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-size: 1.1rem; background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); padding: 10px 22px; border-radius: 30px; margin-top: 20px; font-weight: 600; transition: opacity 0.3s; }
+        .instagram-link:hover { opacity: 0.9; }
+        .map-box iframe { width: 100%; height: 345px; border-radius: 15px; border: 3px solid var(--greda-orange); display: block; }
+
+        footer { text-align: center; padding: 14px; background-color: #1a0e08; color: rgba(180,160,140,0.35); font-size: 0.65rem; letter-spacing: 0.5px; }
+        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 30px; right: 30px; background-color: #25d366; color: #FFF; border-radius: 50%; text-align: center; font-size: 32px; box-shadow: 2px 2px 10px rgba(0,0,0,0.25); z-index: 100; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s; }
+        .whatsapp-float:hover { transform: scale(1.1); }
+
+        /* Candado Admin (en footer, muy discreto) */
+        .footer-inner { display: flex; align-items: center; justify-content: center; position: relative; }
+        .admin-lock-btn {
+            position: absolute; left: 0;
+            background: none; border: none; cursor: pointer;
+            color: rgba(180,160,140,0.25); font-size: 0.7rem;
+            padding: 2px 6px;
+            transition: color 0.3s; font-family: inherit;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .admin-lock-btn:hover { color: rgba(180,160,140,0.7); }
+
+        /* Modal Admin */
+        .admin-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 500; align-items: center; justify-content: center; padding: 16px; }
+        .admin-modal-overlay.active { display: flex; }
+        .admin-modal-box { background: white; width: 100%; max-width: 820px; height: 92vh; border-radius: 14px; position: relative; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.35); }
+        .admin-modal-close { position: absolute; top: 8px; right: 10px; width: 34px; height: 34px; background: white; border: 1px solid #ddd; border-radius: 50%; font-size: 1.3rem; line-height: 1; cursor: pointer; z-index: 10; color: #555; }
+        .admin-modal-close:hover { background: #f2f2f2; }
+        .admin-modal-box iframe { width: 100%; height: 100%; border: none; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.3rem; }
+            .hero-logo { width: 160px; }
+            .hero-nav a { padding: 14px 16px; font-size: 0.82rem; letter-spacing: 1px; }
+            /* Fix barra inferior móvil */
+            body { padding-bottom: env(safe-area-inset-bottom); }
+            .sticky-nav-links { flex: 1; justify-content: space-around; }
+            .sticky-nav-links a { flex: 1; text-align: center; padding: 14px 8px; font-size: 0.68rem; letter-spacing: 0.5px; }
+        }
+    </style>
+    <link rel="stylesheet" href="privacy.css">
+    <link rel="stylesheet" href="site-polish.css">
+    <link rel="stylesheet" href="menu-social.css">
+</head>
+<body>
+
+    <header class="hero" id="hero-carta">
+        <img src="logo-tetera.webp" alt="Logo La Tetera de Greda" class="hero-logo" onerror="this.style.display='none'">
+        <h1>La Tetera de Greda</h1>
+        <p class="hero-sub">Nuestra Carta Completa</p>
+        <nav class="hero-nav">
+            <a href="index.html">Inicio</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="carta.html" class="active">La Carta</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+    </header>
+
+    <section class="menu-section">
+        <h2 class="section-title">Nuestra carta</h2>
+
+        <div class="menu-kind-switch" role="group" aria-label="Tipo de carta">
+            <button type="button" class="menu-kind-btn active" id="menu-kind-comidas" aria-pressed="true" aria-controls="menu-grid filtros-section" onclick="seleccionarCarta('comidas')"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Comidas</button>
+            <button type="button" class="menu-kind-btn" id="menu-kind-bebidas" aria-pressed="false" aria-controls="drinks-section" onclick="seleccionarCarta('bebidas')"><i class="fa-solid fa-wine-glass" aria-hidden="true"></i> Bebestibles</button>
+        </div>
+        <!-- BUSCADOR -->
+        <div class="search-bar-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="carta-search" placeholder="Buscar plato o ingrediente..." oninput="onSearch(this.value)" autocomplete="off" enterkeyhint="search">
+            <button id="btn-clear-search" onclick="clearSearch()" title="Limpiar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="filters" id="filtros-section">
+            <button class="filter-btn active" onclick="filterMenu('todos', this)">Todos</button>
+            <button class="filter-btn" onclick="filterMenu('carnes', this)">Carnes y a lo Pobre</button>
+            <button class="filter-btn" onclick="filterMenu('mar', this)">Del Mar</button>
+            <button class="filter-btn" onclick="filterMenu('fondos', this)">Platos Tradicionales</button>
+            <button class="filter-btn" onclick="filterMenu('entradas', this)">Entradas y Ensaladas</button>
+            <button class="filter-btn" onclick="filterMenu('guarniciones', this)">Guarniciones</button>
+            <button class="filter-btn" onclick="filterMenu('ninos', this)">Menú Niños</button>
+            <button class="filter-btn" onclick="filterMenu('postres', this)">Postres</button>
+        </div>
+
+        <div class="menu-grid" id="menu-grid">
+            <p style="text-align:center; grid-column:1/-1; padding:40px 0; color:#999;">Cargando menú...</p>
+        </div>
+
+        <div class="drinks-section" id="drinks-section" hidden>
+            <p style="text-align:center; color:#999;">Cargando bebestibles...</p>
+        </div>
+    </section>
+
+    <section id="contacto" class="social-map-section">
+        <div class="social-map-container">
+            <div class="contact-box">
+                <h2>¡Ven a visitarnos!</h2>
+                <p><i class="fa-solid fa-location-dot"></i> Santa Ana 98, Villa Alemana.</p>
+                <p><i class="fa-regular fa-clock"></i> Lunes a Domingo, 12:30 – 17:00 hrs</p>
+                <p><i class="fa-brands fa-whatsapp"></i> <a href="https://wa.me/56971482268">+569 7148 2268</a></p>
+                <p><i class="fa-solid fa-phone"></i> <a href="tel:322220409">32 322 0409</a></p>
+                <p style="margin-top: 15px;">¿Nos visitas? Etiquétanos en tus fotos y sé parte de la familia de La Tetera de Greda.</p>
+                <div class="contact-social-links"><a href="https://www.instagram.com/lateteradegreda?igsh=MWE2cnlhZmY2NDV6aA==" target="_blank" class="instagram-link">
+                    <i class="fa-brands fa-instagram"></i> Síguenos @lateteradegreda
+                </a>
+                <a class="instagram-link facebook-link" data-facebook hidden target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i> Síguenos en Facebook</a></div>
+            </div>
+            <div class="map-box">
+                <iframe title="Ubicación de La Tetera de Greda" hidden data-privacy-map="https://maps.google.com/maps?q=Santa%20Ana%2098,%20Villa%20Alemana,%20Chile&t=&z=16&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-inner">
+            <p>© 2026 Restobar La Tetera de Greda. Todos los derechos reservados.</p>
+            <button class="admin-lock-btn" onclick="abrirAdmin()" title="Administración">
+                <i class="fa-solid fa-lock"></i>
+            </button>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/56971482268?text=Hola,%20vengo%20desde%20su%20página%20web%20y%20me%20gustaría%20hacer%20una%20consulta." class="whatsapp-float" target="_blank">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Modal Admin -->
+    <div id="admin-modal-overlay" class="admin-modal-overlay">
+        <div class="admin-modal-box">
+            <button id="admin-modal-close" class="admin-modal-close" aria-label="Cerrar">&times;</button>
+            <iframe id="admin-modal-iframe" title="Panel de administración" src=""></iframe>
+        </div>
+    </div>
+
+    <script type="module">
+        
+        import { renderFeatured } from './featured.js';
+        import { db, collection, getDocs, query, orderBy, doc, getDoc } from './public-content.js';
+
+        // CACHÉ de portada: mostrar inmediatamente, actualizar en segundo plano
+        (function() {
+            try {
+                const cached = JSON.parse(localStorage.getItem('greda_portadas_v1') || 'null');
+                if (cached && cached.carta) {
+                    const hero = document.getElementById('hero-carta');
+                    hero.style.backgroundImage = `linear-gradient(rgba(64,27,15,0.78), rgba(122,40,29,0.78)), url('${cached.carta}')`;
+                    hero.style.backgroundSize = 'cover';
+                    hero.style.backgroundPosition = 'center';
+                }
+            } catch(e) {}
+        })();
+
+        // Actualizar portada desde Firestore en segundo plano
+        (async () => {
+            try {
+                const snap = await getDoc(doc(db, 'configuracion', 'portadas'));
+                if (snap.exists()) {
+                    const p = snap.data();
+                    try { localStorage.setItem('greda_portadas_v1', JSON.stringify(p)); } catch(e) {}
+                    if (p.carta) {
+                        const hero = document.getElementById('hero-carta');
+                        hero.style.backgroundImage = `linear-gradient(rgba(64,27,15,0.78), rgba(122,40,29,0.78)), url('${p.carta}')`;
+                        hero.style.backgroundSize = 'cover';
+                        hero.style.backgroundPosition = 'center';
+                    }
+                }
+            } catch(e) {}
+        })();
+
+        const ORDEN_SUBCATEGORIAS = ['Aperitivos y Cócteles', 'Vinos Blancos y Tintos', 'Cervezas', 'Sin Alcohol & Cafetería'];
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function formatTags(tags) {
+            if (!tags || !tags.length) return '';
+            return `<div class="item-tags">${tags.map(t => `<span class="item-tag">${escapeHtml(t)}</span>`).join('')}</div>`;
+        }
+
+        // Estado global de platos para el buscador
+        let todosLosPlatos = [];
+        let categoriaActiva = 'todos';
+        let tipoCartaActiva = 'comidas';
+        const gruposDeBebidas = [];
+
+        async function cargarCarta() {
+            const grid = document.getElementById('menu-grid');
+            const drinks = document.getElementById('drinks-section');
+
+            try {
+                const platosSnap = await getDocs(query(collection(db, 'platos'), orderBy('orden')));
+                todosLosPlatos = [];
+                grid.innerHTML = '';
+
+                if (platosSnap.empty) {
+                    grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#999;">Aún no hay platos cargados en la carta.</p>';
+                }
+
+                platosSnap.forEach(docSnap => {
+                    const p = docSnap.data();
+                    // Saltar platos no disponibles
+                    if (p.disponible === false) return;
+
+                    const img = p.imagenBase64 || p.imagenURL || '';
+                    let precioHtml = `<span class="item-price">${escapeHtml(p.precio)}</span>`;
+                    let ribbonHtml = '';
+                    if (p.oferta) {
+                        ribbonHtml = `<div class="oferta-ribbon"><i class="fa-solid fa-tag"></i> ${escapeHtml(p.ofertaEtiqueta || 'OFERTA')}</div>`;
+                        precioHtml = `<span class="item-price tachado">${escapeHtml(p.precio)}</span><span class="item-price oferta-precio">${escapeHtml(p.ofertaPrecio)}</span>`;
+                    }
+
+                    const imgHtml = img
+                        ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.nombre)}" class="plato-img" width="800" height="600" decoding="async" loading="${grid.children.length < 2 ? 'eager' : 'lazy'}">`
+                        : '';
+
+                    const div = document.createElement('div');
+                    div.className = `menu-item ${p.categoria} todos`;
+                    div.dataset.id = docSnap.id;
+                    div.dataset.nombre = (p.nombre || '').toLowerCase();
+                    div.dataset.desc = (p.descripcion || '').toLowerCase();
+                    div.dataset.tags = ((p.etiquetas || []).join(' ')).toLowerCase();
+                    div.dataset.categoria = p.categoria || 'todos';
+                    div.innerHTML = `
+                        ${ribbonHtml}
+                        ${imgHtml}
+                        <div class="item-content">
+                            <div class="item-header"><span class="item-name">${escapeHtml(p.nombre)}</span><div>${precioHtml}</div></div>
+                            ${p.descripcion ? `<p class="item-desc">${escapeHtml(p.descripcion)}</p>` : ''}
+                            ${formatTags(p.etiquetas)}
+                        </div>`;
+                    grid.appendChild(div);
+                    todosLosPlatos.push(div);
+                    div.classList.add('show');
+                });
+
+                renderFeatured(grid);
+
+                // Bebidas
+                const bebidasSnap = await getDocs(query(collection(db, 'bebidas'), orderBy('orden')));
+                const porSubcategoria = {};
+                bebidasSnap.forEach(docSnap => {
+                    const b = docSnap.data();
+                    if (b.disponible === false) return;
+                    if (!porSubcategoria[b.subcategoria]) porSubcategoria[b.subcategoria] = [];
+                    porSubcategoria[b.subcategoria].push(b);
+                });
+
+                drinks.innerHTML = '';
+                if (bebidasSnap.empty) {
+                    drinks.innerHTML = '<p style="text-align:center; color:#999;">Aún no hay bebestibles cargados.</p>';
+                }
+                const categorias = Object.keys(porSubcategoria).sort((a, b) => {
+                    const ia = ORDEN_SUBCATEGORIAS.indexOf(a), ib = ORDEN_SUBCATEGORIAS.indexOf(b);
+                    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+                });
+                categorias.forEach(cat => {
+                    const h3 = document.createElement('h3');
+                    h3.className = 'drink-category-title';
+                    h3.textContent = cat;
+                    drinks.appendChild(h3);
+                    const group={heading:h3,items:[]};gruposDeBebidas.push(group);
+                    porSubcategoria[cat].forEach(b => {
+                        const item = document.createElement('div');
+                        item.className = 'drink-list-item';
+                        const tagsHtml = b.etiquetas && b.etiquetas.length
+                            ? `<div class="drink-tags">${b.etiquetas.map(t => `<span class="item-tag">${escapeHtml(t)}</span>`).join('')}</div>` : '';
+                        item.innerHTML = `<span class="drink-name">${escapeHtml(b.nombre)}${tagsHtml}</span><div class="drink-dots"></div><span class="drink-price">${escapeHtml(b.precio)}</span>`;
+                        item.dataset.search=`${b.nombre||''} ${cat} ${(b.etiquetas||[]).join(' ')}`.toLowerCase();
+                        group.items.push(item);drinks.appendChild(item);
+                    });
+                });
+                if(tipoCartaActiva==='bebidas')aplicarBebidas(document.getElementById('carta-search').value.toLowerCase().trim());
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#999;">No se pudo cargar el menú. Intenta recargar la página.</p>';
+                drinks.textContent='No se pudieron cargar los bebestibles. Intenta recargar la página.';
+            }
+        }
+
+        cargarCarta();
+
+        window.seleccionarCarta = function(tipo){
+            tipoCartaActiva=tipo;
+            const bar=tipo==='bebidas';
+            for(const [id,active]of [['menu-kind-comidas',!bar],['menu-kind-bebidas',bar]]){const button=document.getElementById(id);button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
+            document.getElementById('filtros-section').hidden=bar;
+            document.getElementById('menu-grid').hidden=bar;
+            document.getElementById('menu-grid').style.display=bar?'none':'grid';
+            document.getElementById('drinks-section').hidden=!bar;
+            document.getElementById('drinks-section').style.display=bar?'block':'none';
+            const input=document.getElementById('carta-search');input.value='';input.placeholder=bar?'Buscar bebida o cóctel...':'Buscar plato o ingrediente...';input.setAttribute('aria-label',bar?'Buscar bebida o cóctel':'Buscar plato o ingrediente');document.getElementById('btn-clear-search').style.display='none';
+            if(bar)aplicarBebidas('');else aplicarFiltros(categoriaActiva,'');
+            const featured=document.querySelector('.featured-section');if(featured)featured.hidden=bar;
+        };
+        function aplicarBebidas(search){
+            let visible=0;for(const group of gruposDeBebidas){let count=0;for(const item of group.items){item.hidden=!!search&&!item.dataset.search.includes(search);if(!item.hidden)count++;}group.heading.hidden=count===0;visible+=count;}
+            document.getElementById('drinks-no-results')?.remove();if(search&&!visible){const note=document.createElement('p');note.id='drinks-no-results';note.className='no-results';note.setAttribute('role','status');note.textContent='No se encontraron bebestibles para esa búsqueda.';document.getElementById('drinks-section').append(note);}
+        }
+
+        // Filtro de categorías
+        window.filterMenu = function (category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            categoriaActiva = category;
+
+            // Al seleccionar categoría, limpiar el buscador para mayor claridad
+            const searchInput = document.getElementById('carta-search');
+            searchInput.value = '';
+            document.getElementById('btn-clear-search').style.display = 'none';
+
+            const grid = document.getElementById('menu-grid');
+            const drinks = document.getElementById('drinks-section');
+
+            grid.style.display = 'grid';
+            drinks.style.display = 'none';
+            aplicarFiltros(category, '');
+        };
+
+        function aplicarFiltros(cat, search) {
+            const grid = document.getElementById('menu-grid');
+            let visible = 0;
+            todosLosPlatos.forEach(item => {
+                const matchCat = cat === 'todos' || item.dataset.categoria === cat;
+                const matchSearch = !search ||
+                    item.dataset.nombre.includes(search) ||
+                    item.dataset.desc.includes(search) ||
+                    item.dataset.tags.includes(search);
+                if (matchCat && matchSearch) { item.classList.add('show'); visible++; }
+                else item.classList.remove('show');
+            });
+            // Mensaje sin resultados
+            const existing = grid.querySelector('.no-results');
+            if (existing) existing.remove();
+            if (visible === 0) {
+                const msg = document.createElement('p');
+                msg.className = 'no-results';
+                msg.textContent = `No se encontraron platos para "${search}".`;
+                grid.appendChild(msg);
+            }
+        }
+
+        window.onSearch = function(val) {
+            const clearBtn = document.getElementById('btn-clear-search');
+            clearBtn.style.display = val ? 'block' : 'none';
+            if(tipoCartaActiva==='bebidas'){aplicarBebidas(val.toLowerCase().trim());return;}
+            aplicarFiltros(categoriaActiva, val.toLowerCase().trim());
+        };
+
+        window.clearSearch = function() {
+            const input = document.getElementById('carta-search');
+            input.value = '';
+            document.getElementById('btn-clear-search').style.display = 'none';
+            if(tipoCartaActiva==='bebidas')aplicarBebidas('');else aplicarFiltros(categoriaActiva, '');
+        };
+
+        // Modal Admin
+        const adminOverlay = document.getElementById('admin-modal-overlay');
+        const adminIframe = document.getElementById('admin-modal-iframe');
+        const adminClose = document.getElementById('admin-modal-close');
+        window.abrirAdmin = function() { adminIframe.src = 'admin.html'; adminOverlay.classList.add('active'); };
+        adminClose.addEventListener('click', () => { adminOverlay.classList.remove('active'); adminIframe.src = ''; });
+        adminOverlay.addEventListener('click', (e) => { if (e.target === adminOverlay) { adminOverlay.classList.remove('active'); adminIframe.src = ''; } });
+
+        // Enter en celular cierra el teclado
+        document.getElementById('carta-search').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.target.blur(); }
+        });
+    </script>
+    <script type="module" src="privacy.js"></script>
+    <script type="module" src="site-polish.js"></script>
+    <script type="module" src="social-links.js"></script>
+</body>
+</html>

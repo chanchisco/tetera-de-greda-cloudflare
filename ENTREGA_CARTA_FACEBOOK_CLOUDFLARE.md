@@ -1,3 +1,5 @@
+> Documento histórico del 5 de noviembre. Para el estado vigente y las correcciones publicadas, consultar ENTREGA_AJUSTES_FINALES_2026_11_06.md.
+
 # Carta, Facebook y entrega independiente para Cloudflare
 
 5 de noviembre de 2026. Cambios implementados localmente; no publicados desde este chat. Vercel, su repositorio, el dominio y los documentos de Firebase de producción no se modificaron.

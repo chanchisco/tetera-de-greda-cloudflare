@@ -1,6 +1,6 @@
 # Publicar La Tetera de Greda en Cloudflare
 
-Entrega del 5 de noviembre de 2026. Esta guía acompaña una copia completa preparada para otro repositorio. Vercel puede seguir funcionando mientras se prueba Cloudflare.
+Actualización del 6 de noviembre de 2026. Esta guía acompaña una copia completa preparada para otro repositorio. Vercel puede seguir funcionando mientras se prueba Cloudflare.
 
 ## 1. Qué vas a usar
 
@@ -16,7 +16,7 @@ Se conserva Firebase para las cuentas y el contenido. **Si ambos alojamientos us
 
 1. Conserva tu respaldo habitual de la versión actual.
 2. En GitHub crea un repositorio nuevo. Un nombre posible es `tetera-de-greda-cloudflare`; el nombre del repositorio puede ser otro.
-3. Abre la carpeta `ENTREGA_CLOUDFLARE_FINAL_2026_11_05`. Si elegiste el ZIP, primero extráelo.
+3. Abre la carpeta `ENTREGA_CLOUDFLARE_2026_11_06`. Si elegiste el ZIP, primero extráelo.
 4. En el repositorio nuevo selecciona **Add file → Upload files**.
 5. Sube **el contenido** de esa carpeta a la raíz del repositorio, incluidas las subcarpetas. No subas la carpeta exterior ni el ZIP cerrado.
 6. Guarda con **Commit changes**.
@@ -134,7 +134,7 @@ El hostname de origen debe tener un registro DNS con proxy activo para que la re
 
 Conserva el repositorio y proyecto de Vercel actuales. El repositorio nuevo publica únicamente el Worker nuevo. Si usas el mismo Firebase, volver a Vercel recupera ese alojamiento, pero no revierte cambios hechos en los datos compartidos.
 
-No se publicaron recursos, modificaron DNS ni configuraron secretos reales desde este chat. Esos pasos pertenecen a tu cuenta y se completan después de subir esta entrega.
+El 6 de noviembre se publicaron dos correcciones del adaptador en el repositorio de Cloudflare y se comprobó la recuperación de la carta y una imagen en producción. Los ajustes visuales y legales de esta entrega deben subirse según el documento ENTREGA_AJUSTES_FINALES_2026_11_06.md. No se modificaron DNS ni se configuraron secretos desde el chat.
 
 ## Documentación consultada
 
